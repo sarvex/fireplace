@@ -10,12 +10,12 @@ env.key_filename = settings.SSH_KEY
 fabdeploytools.envs.loadenv(settings.CLUSTER)
 
 ROOT, FIREPLACE = helpers.get_app_dirs(__file__)
-COMMONPLACE = '%s/node_modules/.bin/commonplace' % FIREPLACE
+COMMONPLACE = f'{FIREPLACE}/node_modules/.bin/commonplace'
 
 if settings.ZAMBONI_DIR:
     helpers.scl_enable('python27')
-    ZAMBONI = '%s/zamboni' % settings.ZAMBONI_DIR
-    ZAMBONI_PYTHON = '%s/venv/bin/python' % settings.ZAMBONI_DIR
+    ZAMBONI = f'{settings.ZAMBONI_DIR}/zamboni'
+    ZAMBONI_PYTHON = f'{settings.ZAMBONI_DIR}/venv/bin/python'
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings_local_mkt'
 os.environ["PATH"] += os.pathsep + os.pathsep.join([COMMONPLACE])
@@ -28,7 +28,7 @@ def pre_update(ref):
     with lcd(FIREPLACE):
         local('git fetch')
         local('git fetch -t')
-        local('git reset --hard %s' % ref)
+        local(f'git reset --hard {ref}')
 
 
 @task
@@ -117,22 +117,22 @@ def pre_update_latest_tag():
 @task
 def build_package(package_env, build_dir=FIREPLACE):
     with lcd(build_dir):
-        local('SERVER=%s node_modules/.bin/gulp package' % package_env)
+        local(f'SERVER={package_env} node_modules/.bin/gulp package')
 
 
 @task
 def upload_package(fireplace_package, package_name):
     with lcd(ZAMBONI):
-        local('%s manage.py upload_new_marketplace_package %s %s '
-              % (ZAMBONI_PYTHON, package_name, fireplace_package))
+        local(
+            f'{ZAMBONI_PYTHON} manage.py upload_new_marketplace_package {package_name} {fireplace_package} '
+        )
 
 
 def fireplace_package(env, build_dir):
-    return '%s/package/builds/_%s.zip' % (build_dir, env)
+    return f'{build_dir}/package/builds/_{env}.zip'
 
 
 @task
 def deploy_build_id(app):
     with lcd(ZAMBONI):
-        local('%s manage.py deploy_build_id %s' %
-              (ZAMBONI_PYTHON, app))
+        local(f'{ZAMBONI_PYTHON} manage.py deploy_build_id {app}')

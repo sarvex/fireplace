@@ -27,10 +27,13 @@ english_categories = {  # Stolen from categories.js
 
 
 def build_locale_dict(data):
-    if not 'objects' in data:
+    if 'objects' not in data:
         return None
-    return dict(((d['slug'], d['name']) for d in data['objects']
-                if d['slug'] in english_categories))
+    return {
+        d['slug']: d['name']
+        for d in data['objects']
+        if d['slug'] in english_categories
+    }
 
 
 def write_po(filename, locale_categories):
