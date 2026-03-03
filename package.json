@@ -24,7 +24,7 @@
     "rimraf": "2.2.8",
     "run-sequence": "1.0.1",
     "node.extend": "1.1.2",
-    "underscore": "1.7.0"
+    "underscore": "1.13.8"
   },
   "devDependencies": {
     "casperjs": "^1.1.0-beta3",
